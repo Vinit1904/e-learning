@@ -1,5 +1,7 @@
 package com.cdac.elearning.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +15,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.cdac.elearning.dto.AuthenticationResponse;
 import com.cdac.elearning.dto.Login;
+import com.cdac.elearning.dto.ScoreResponse;
+import com.cdac.elearning.model.Course;
+import com.cdac.elearning.model.Scores;
 import com.cdac.elearning.model.User;
+import com.cdac.elearning.repository.CourseRepository;
 import com.cdac.elearning.repository.userRepository;
 import com.cdac.elearning.security.JwtProvider;
 
@@ -32,6 +39,8 @@ public class userService {
 	 @Autowired
 	 BCryptPasswordEncoder bCryptPasswordEncoder;
 	 
+	 @Autowired
+	 CourseRepository courseRepository;
 	 
 	 @Autowired
 	  private JwtProvider jwtProvider;
@@ -59,7 +68,7 @@ public class userService {
 	        
 	        User userDeatails = userRepo.findByEmail(loginRequest.getEmailId());
 	        
-	        return new AuthenticationResponse(authenticationToken,userDeatails.getFirstName());
+	        return new AuthenticationResponse(authenticationToken,userDeatails.getEmailId(),userDeatails.getFirstName());
 		 }
 		 catch(UsernameNotFoundException e) {
 			 throw new UsernameNotFoundException("User not Found");
@@ -101,5 +110,41 @@ public class userService {
 	        user.setReset_password_token(null);
 	        userRepo.save(user);
 	    }
+	    
+	    
+	    public void addCourse(String emailId,String courseName) {
+	        Course course =courseRepository.findByName(courseName);
+	        List<Course> list =new ArrayList<Course>();
+	        list.add(course);
+	       
+	        User user =userRepo.findByEmail(emailId);
+	        user.setCourses(list);
+	        userRepo.save(user);
+	    }
+	    
+
+		public ScoreResponse getScore(String emailId,String courseName)
+		{
+			User user =userRepo.findByEmail(emailId);
+			
+			List<Course> courses =user.getCourses();
+			
+			Scores mScore=new Scores();
+			String s1=courseName;
+			for(Course cs:courses)
+			{
+				String s2 =cs.getCourseName();
+					if(s1.equals(s2))
+					{
+						mScore=cs.getScore();
+					}
+			}
+						
+			
+			ScoreResponse score=new ScoreResponse();
+			score.setProblemSolvingScore(mScore.getProblemSolvingScore());
+			score.setQuizScore(mScore.getQuizScore());
+			return score;
+		}
 
 }

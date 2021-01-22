@@ -1,13 +1,16 @@
 package com.cdac.elearning.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -15,90 +18,83 @@ import org.springframework.stereotype.Repository;
 public class Course {
 	
 	@Id
-	private ObjectId id;
+	private String _id;
 	
 	@Indexed(name = "index_unique_courseName", unique = true)
-	private String name;
+	private String courseName;
 	
-    private String language;
-     
-    private String title;
-    
+	@Transient
+	private String emailId;
+	
 	private String image;
+		
+	private Scores Score;
 	
-	@DBRef(db="Quiz")
+	
 	private List<Quiz> quiz;
 	
 	
+	private List<Problems> problems;
+	
 	public Course( ) {
 		super();
-
-	}
-	
-	
-	@PersistenceConstructor
-	public Course(ObjectId id, String name, String language, String title, String image) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.language = language;
-		this.title = title;
-		this.image = image;
+		Score= new Scores();
+		quiz=new ArrayList<Quiz>();
+		problems=new ArrayList<Problems>();
 	}
 
-
-
-	
-	public ObjectId getId() {
-		return id;
+	public String getCourseName() {
+		return courseName;
 	}
 
-	
-	public String getTitle() {
-		return title;
+	public void setCourseName(String courseName) {
+		this.courseName = courseName;
 	}
-
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
 
 	public String getImage() {
 		return image;
 	}
 
-
 	public void setImage(String image) {
 		this.image = image;
 	}
-
 
 	public List<Quiz> getQuiz() {
 		return quiz;
 	}
 
-
 	public void setQuiz(List<Quiz> quiz) {
 		this.quiz = quiz;
 	}
 
-
-	public String getLanguage() {
-		return language;
+	public List<Problems> getProblems() {
+		return problems;
 	}
 
-	public void setLanguage(String language) {
-		this.language = language;
+	public void setProblems(List<Problems> problems) {
+		this.problems = problems;
 	}
 
-	public String getName() {
-		return name;
+	public Scores getScore() {
+		return Score;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setScore(Scores score) {
+		Score = score;
+	}
+
+	public String get_id() {
+		return _id;
+	}
+
+	public String getEmailId() {
+		return emailId;
+	}
+
+	public void setEmailId(String emailId) {
+		this.emailId = emailId;
 	}
 	
-    
+	
+
 }

@@ -1,5 +1,6 @@
 package com.cdac.elearning.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.cdac.elearning.exception.CourseException;
 import com.cdac.elearning.model.Course;
+import com.cdac.elearning.model.Problems;
+import com.cdac.elearning.model.Quiz;
+import com.cdac.elearning.model.Scores;
 import com.cdac.elearning.model.User;
 import com.cdac.elearning.repository.CourseRepository;
 
@@ -35,7 +39,8 @@ public class CourseService {
 	
 	public void addCourse(Course course)
 	{
-		try {
+		try {			
+		
 		courseRepository.save(course);
 		}
 		catch(DuplicateKeyException e) {
@@ -50,10 +55,8 @@ public class CourseService {
 	public void updateCourse(Course course)
 	{
 		try {
-		Course courses = courseRepository.findByName(course.getName());
+		Course courses = courseRepository.findByName(course.getCourseName());
 			if(courses!=null) {
-			courses.setTitle(course.getTitle());
-			courses.setLanguage(course.getLanguage());
 			courses.setImage(course.getImage());
 			courseRepository.save(courses);
 			}

@@ -1,21 +1,28 @@
-package com.cdac.elearning.service;
+package com.cdac.elearning.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-@Data
 public class AuthenticationResponse {
-    private String authenticationToken;
+
+	private String authenticationToken;
     
 	private String username;
 	
 	private String firstName;
+
+	public AuthenticationResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	
-	public AuthenticationResponse(String authenticationToken, String username) {
+	
+	public AuthenticationResponse(String authenticationToken, String username, String firstName) {
 		super();
 		this.authenticationToken = authenticationToken;
 		this.username = username;
+		this.firstName = firstName;
 	}
+
+
 
 	public String getAuthenticationToken() {
 		return authenticationToken;
@@ -33,6 +40,12 @@ public class AuthenticationResponse {
 		this.username = username;
 	}
 
+	public String getFirstName() {
+		return firstName;
+	}
 
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 	
 }

@@ -1,39 +1,53 @@
-package com.cdac.elearning.controller;
 
-import java.util.ArrayList;
-import java.util.List;
+package com.cdac.elearning.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cdac.elearning.dto.Question;
-import com.cdac.elearning.dto.QuizResponse;
+import com.cdac.elearning.dto.Score;
+import com.cdac.elearning.dto.ScoreResponse;
 import com.cdac.elearning.dto.Status;
 import com.cdac.elearning.dto.Status.StatusType;
 import com.cdac.elearning.exception.CourseException;
 import com.cdac.elearning.model.Course;
-import com.cdac.elearning.model.Quiz;
-import com.cdac.elearning.service.QuizService;
+import com.cdac.elearning.model.Scores;
+import com.cdac.elearning.service.ScoreService;
+
 
 @RestController
 @CrossOrigin
-public class quizController {
+public class scoresController {
 
 	@Autowired
-	QuizService quizService;
+	ScoreService scoreService;
 	
-	@PostMapping("/quiz/add")
-	public Status addQuiz(@RequestBody Quiz quiz) {
+	
+	@GetMapping("/getscore")
+	public ScoreResponse getScore(@RequestParam("courseName") String name) {
 		try {
-			//System.out.println(quiz.getQuestion());
-			quizService.addQuiz(quiz);
+			
+			return scoreService.getScore(name); 
+			
+		}
+		
+		catch(CourseException e) {
+			ScoreResponse score =new ScoreResponse();
+			return score;
+		}
+		
+	}
+		
+	
+	@PostMapping("/score/add")
+	public Status addScore(@RequestBody Scores score) {
+		try {
+			scoreService.addScore(score);
 			Status status=new Status();
 			status.setStatus(StatusType.SUCCESS);
 			status.setMessage("Course Successfully Entered!!");
@@ -55,14 +69,14 @@ public class quizController {
 		
 	}
 	
-	@PostMapping("/quiz/update")
-	public Status updateQuiz(@RequestBody Quiz quiz) {
+	
+	@PostMapping("/score/update")
+	public Status updateScore(@RequestBody Scores score) {
 		try {
-			//System.out.println(quiz.getQuestion());
-			quizService.updateQuiz(quiz);
+			scoreService.updateScore(score);
 			Status status=new Status();
 			status.setStatus(StatusType.SUCCESS);
-			status.setMessage("Quiz Successfully Updated!!");
+			status.setMessage("Course Successfully Entered!!");
 			return status; 
 			
 		}
@@ -81,18 +95,4 @@ public class quizController {
 		
 	}
 	
-	@GetMapping("/getquiz")
-	public List<QuizResponse> getQuiz(@RequestParam("courseName") String courseName) {
-		try {
-			//System.out.println(quiz.getQuestion());
-			
-			return quizService.getQuiz(courseName); 
-			
-		}		
-		catch(CourseException e) {
-			List<QuizResponse> list= new ArrayList<QuizResponse>();
-			return list;
-		}
-		
-	}
 }

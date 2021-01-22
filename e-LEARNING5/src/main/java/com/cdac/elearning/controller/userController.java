@@ -23,19 +23,25 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cdac.elearning.service.AuthenticationResponse;
+
 import com.cdac.elearning.service.userService;
 
 import io.jsonwebtoken.security.InvalidKeyException;
 import net.bytebuddy.utility.RandomString;
 
 import com.cdac.elearning.config.EmailCfg;
+import com.cdac.elearning.dto.AuthenticationResponse;
 import com.cdac.elearning.dto.Login;
 import com.cdac.elearning.dto.LoginResponse;
 import com.cdac.elearning.dto.RegistrationResponse;
+import com.cdac.elearning.dto.Score;
+import com.cdac.elearning.dto.ScoreResponse;
+import com.cdac.elearning.dto.Status;
 import com.cdac.elearning.dto.Status.StatusType;
+import com.cdac.elearning.exception.CourseException;
 import com.cdac.elearning.model.User;;
 
 
@@ -98,7 +104,8 @@ public class userController {
 			res.setStatus(StatusType.SUCCESS);
 			res.setMessage("Login SucessFull");
 			res.setAuthToken(authResponse.getAuthenticationToken());			
-			res.setName(authResponse.getUsername());
+			res.setName(authResponse.getFirstName());
+			res.setEmailId(authResponse.getUsername());
 			return res;
 		}
 		catch(UsernameNotFoundException e){
@@ -214,5 +221,41 @@ public class userController {
 	       
 	      return "message";
 	  }
+	  
+	
+	  
+	  @GetMapping("/addCourse")
+	    public Status addCourse(@RequestParam("emailId")String emailId,@RequestParam("courseName")String courseName) {
+			try {	
+				
+				userServ.addCourse(emailId,courseName);
+	        
+				Status res= new RegistrationResponse();
+				res.setStatus(StatusType.SUCCESS);
+				res.setMessage("Course Added Successful!");
+				return res;
+			}
+			catch(CourseException e){
+				Status res= new Status();
+		        res.setStatus(StatusType.FAILURE);
+		        res.setMessage("Course Added unsuccessful!");
+		        return res;
+		}
+	  }
+	  
+	  @GetMapping("/getscores")
+		public ScoreResponse getScores(@RequestParam("emailId")String emailId,@RequestParam("courseName") String name) {
+			try {
+				
+				return userServ.getScore(emailId,name); 
+				
+			}
+			
+			catch(CourseException e) {
+				ScoreResponse score =new ScoreResponse();
+				return score;
+			}
+			
+		}
     
 }

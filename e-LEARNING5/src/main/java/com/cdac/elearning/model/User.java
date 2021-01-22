@@ -2,6 +2,9 @@ package com.cdac.elearning.model;
 
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -9,11 +12,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@Document(collection = "user")
+@Document(collection = "Test_User")
 public class User {
 	
 	@Id 
-	private ObjectId _id;
+	private String _id;
 	
 	private String firstName;
 	
@@ -30,23 +33,16 @@ public class User {
 	
 	private String reset_password_token;
 	
+	private List<Course> courses;
 
 
 	public User() {
+		courses=new ArrayList<Course>();
 	}
 
-	public User(int id, String firstName, String lastName, String emailId, String mobileNo,String password,String role,String reset_password_token) {
-		super();
 
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.emailId = emailId;
-		this.mobileNo = mobileNo;
-		this.password=password;
-		this.role=role;
-		this.reset_password_token=reset_password_token;
-	}
-
+	
+	
 	public String getFirstName() {
 		return firstName;
 	}
@@ -101,6 +97,21 @@ public class User {
 
 	public void setRole(String role) {
 		this.role = role;
+	}
+
+
+	public List<Course> getCourses() {
+		return courses;
+	}
+
+
+	public void setCourses(List<Course> courses) {
+		this.courses = courses;
+	}
+
+
+	public String get_id() {
+		return _id;
 	}
 	
 	

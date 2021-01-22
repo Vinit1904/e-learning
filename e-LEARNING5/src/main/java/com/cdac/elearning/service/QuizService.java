@@ -1,11 +1,14 @@
 package com.cdac.elearning.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import com.cdac.elearning.dto.Question;
+import com.cdac.elearning.dto.QuizResponse;
 import com.cdac.elearning.exception.CourseException;
 import com.cdac.elearning.model.Course;
 import com.cdac.elearning.model.Quiz;
@@ -23,19 +26,18 @@ public class QuizService {
 	
 	public void addQuiz(Quiz quiz)
 	{
-		System.out.print(quiz);
+		//System.out.print(quiz);
 		try {
-			Course course=courseRepository.findByName("cpp");
 			
-			List<Quiz> mquiz =quizRepository.getQuizByName("cpp");
-			System.out.println();
-			System.out.println(mquiz);
+			Course course=courseRepository.findByName(quiz.getCourseName());
+			//List<Quiz> mquiz =courseRepository.findByName(question.getCourseName());
+			
+			List<Quiz> mquiz =course.getQuiz();			
 			mquiz.add(quiz);
 			course.setQuiz(mquiz);
-			//quiz.setCousrseid(course);
 			
 			
-			quizRepository.save(quiz);
+//			quizRepository.save(quiz);
 			courseRepository.save(course);
 		}
 		catch(DuplicateKeyException e) {
@@ -47,21 +49,56 @@ public class QuizService {
 		
 	}
 	
-	public void findByName(Quiz quiz)
+	
+	
+	public void updateQuiz(Quiz question)
 	{
-		System.out.print(quiz);
+		//System.out.print(quiz);
 		try {
-			Course course=courseRepository.findByName("cpp");
-			List<Quiz> mquiz =course.getQuiz();
-			mquiz.add(quiz);
-			course.setQuiz(mquiz);
-//			quiz.setCousrseid(course);
-//			
-			quizRepository.save(quiz);
-//			courseRepository.save(course);
+			
+			Course course=courseRepository.findByName(question.getCourseName());
+			
+			List<Quiz> list =course.getQuiz();
+			String s1=question.getQuestion();
+			for(Quiz q :list)
+			{
+				String s2=q.getQuestion();
+				if(s1.equals(s2))
+				{
+					q.setCorrect_answer(question.getCorrect_answer());
+					q.setIncorrect_answers(question.getIncorrect_answers());
+				}
+			}
+			course.setQuiz(list);
+			courseRepository.save(course);
 		}
 		catch(DuplicateKeyException e) {
 			throw new CourseException(e.getMessage());
+		}
+		catch(CourseException e){
+			throw new CourseException("Duplicate Course Name");
+		}						
+		
+	}
+	
+	
+	public List<QuizResponse> getQuiz(String name)
+	{
+		try {
+			Course course=courseRepository.findByName(name);
+			List<Quiz> list =course.getQuiz();
+			List<QuizResponse> processQuiz = new ArrayList<QuizResponse>();
+			
+			for(Quiz q : list)
+			{
+				QuizResponse resObj =new QuizResponse();
+				resObj.setCorrect_answer(q.getCorrect_answer());
+				resObj.setIncorrect_answers(q.getIncorrect_answers());
+				resObj.setQuestion(q.getQuestion());
+				processQuiz.add(resObj);
+			}
+						
+			return processQuiz;
 		}
 		catch(CourseException e){
 			throw new CourseException("Duplicate Course Name");
