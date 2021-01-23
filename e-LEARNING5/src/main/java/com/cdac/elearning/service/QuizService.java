@@ -26,25 +26,19 @@ public class QuizService {
 	
 	public void addQuiz(Quiz quiz)
 	{
-		//System.out.print(quiz);
 		try {
 			
 			Course course=courseRepository.findByName(quiz.getCourseName());
-			//List<Quiz> mquiz =courseRepository.findByName(question.getCourseName());
-			
 			List<Quiz> mquiz =course.getQuiz();			
 			mquiz.add(quiz);
 			course.setQuiz(mquiz);
-			
-			
-//			quizRepository.save(quiz);
 			courseRepository.save(course);
 		}
 		catch(DuplicateKeyException e) {
 			throw new CourseException(e.getMessage());
 		}
 		catch(CourseException e){
-			throw new CourseException("Duplicate Course Name");
+			throw new CourseException("Duplicate quiz Name");
 		}						
 		
 	}
@@ -53,7 +47,6 @@ public class QuizService {
 	
 	public void updateQuiz(Quiz question)
 	{
-		//System.out.print(quiz);
 		try {
 			
 			Course course=courseRepository.findByName(question.getCourseName());
@@ -76,10 +69,41 @@ public class QuizService {
 			throw new CourseException(e.getMessage());
 		}
 		catch(CourseException e){
-			throw new CourseException("Duplicate Course Name");
+			throw new CourseException("Duplicate Quiz Name");
 		}						
 		
 	}
+	
+	
+	
+	public void deleteQuiz(Quiz question)
+	{
+		try {
+			
+			Course course=courseRepository.findByName(question.getCourseName());
+			
+			List<Quiz> list =course.getQuiz();
+			String s1=question.getQuestion();
+			for(Quiz q :list)
+			{
+				String s2=q.getQuestion();
+				if(s1.equals(s2))
+				{
+					list.remove(q);
+				}
+			}
+			course.setQuiz(list);
+			courseRepository.save(course);
+		}
+		catch(DuplicateKeyException e) {
+			throw new CourseException(e.getMessage());
+		}
+		catch(CourseException e){
+			throw new CourseException("Quiz not able to delete");
+		}						
+		
+	}
+	
 	
 	
 	public List<QuizResponse> getQuiz(String name)
@@ -101,7 +125,7 @@ public class QuizService {
 			return processQuiz;
 		}
 		catch(CourseException e){
-			throw new CourseException("Duplicate Course Name");
+			throw new CourseException("Quiz Unable to Fetch");
 		}						
 		
 	}

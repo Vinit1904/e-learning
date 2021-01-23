@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 import javax.mail.MessagingException;
+import javax.mail.SendFailedException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,12 +37,12 @@ import com.cdac.elearning.config.EmailCfg;
 import com.cdac.elearning.dto.AuthenticationResponse;
 import com.cdac.elearning.dto.Login;
 import com.cdac.elearning.dto.LoginResponse;
-import com.cdac.elearning.dto.RegistrationResponse;
 import com.cdac.elearning.dto.Score;
 import com.cdac.elearning.dto.ScoreResponse;
 import com.cdac.elearning.dto.Status;
 import com.cdac.elearning.dto.Status.StatusType;
 import com.cdac.elearning.exception.CourseException;
+import com.cdac.elearning.exception.mailException;
 import com.cdac.elearning.model.User;;
 
 
@@ -71,7 +72,7 @@ public class userController {
 	}
 	
 	@PostMapping("/create_user")
-	public RegistrationResponse createUser(@RequestBody User user)
+	public Status createUser(@RequestBody User user)
 	{	
 		try {	
 			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -81,13 +82,13 @@ public class userController {
 		
 			userServ.createUser(user);
         
-			RegistrationResponse res= new RegistrationResponse();
+			Status res= new Status();
 			res.setStatus(StatusType.SUCCESS);
 			res.setMessage("Registration Successful!");
 			return res;
 		}
 		catch(DuplicateKeyException e){
-			RegistrationResponse res= new RegistrationResponse();
+			Status res= new Status();
 	        res.setStatus(StatusType.FAILURE);
 	        res.setMessage("Registration unsuccessful!");
 	        return res;
@@ -156,7 +157,7 @@ public class userController {
 	
 	
 	@PostMapping("/forgot_password")
-    public String processForgotPassword(@RequestBody User loginRequest) throws UnsupportedEncodingException, MessagingException {
+    public Status processForgotPassword(@RequestBody User loginRequest) throws UnsupportedEncodingException, MessagingException {
 		String emailId=loginRequest.getEmailId();
 		String token = RandomString.make(30);
 		
@@ -197,40 +198,57 @@ public class userController {
 			  
 			  helper.setText(content, true);
 			 
+			  try {
 			  mailSender.send(message);
-
+			  	Status res= new Status();
+		        res.setStatus(StatusType.SUCCESS);
+		        res.setMessage("mail send to your emailId!");
 			  
-		return "vv";
+		        return res;
+			  }
+			  catch(Exception e)
+			  {
+				  Status res= new Status();
+			        res.setStatus(StatusType.FAILURE);
+			        res.setMessage("unable to send Fail!");
+			        return res;  
+			  }
+			  
+	
     }
      
 	  
 	  @PostMapping("/reset_password")
-	  public String processResetPassword(@RequestBody User user) {
+	  public Status processResetPassword(@RequestBody User user) {
 	      String token = user.getReset_password_token();
 	      String password = user.getPassword();
 	       
 	      User users = userServ.getByResetPasswordToken(token);
 	      
 	      if (users == null) {
-	    	  
-	          
-	          return "message1";
+	    	  	Status res= new Status();
+		        res.setStatus(StatusType.FAILURE);
+		        res.setMessage("unauthorized User");
+		        return res; 
 	      } else {           
 	          userServ.updatePassword(users, password);
+	          	Status res= new Status();
+		        res.setStatus(StatusType.FAILURE);
+		        res.setMessage("Password Upadte Successfull");
+		        return res;
 	      }
 	       
-	      return "message";
 	  }
 	  
 	
 	  
-	  @GetMapping("/addCourse")
+	  @GetMapping("/addCoursetoCart")
 	    public Status addCourse(@RequestParam("emailId")String emailId,@RequestParam("courseName")String courseName) {
 			try {	
 				
 				userServ.addCourse(emailId,courseName);
 	        
-				Status res= new RegistrationResponse();
+				Status res= new Status();
 				res.setStatus(StatusType.SUCCESS);
 				res.setMessage("Course Added Successful!");
 				return res;

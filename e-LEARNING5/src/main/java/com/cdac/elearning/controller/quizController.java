@@ -81,6 +81,34 @@ public class quizController {
 		
 	}
 	
+	
+	@PostMapping("/quiz/delete")
+	public Status deleteQuiz(@RequestBody Quiz quiz) {
+		try {
+			//System.out.println(quiz.getQuestion());
+			quizService.deleteQuiz(quiz);
+			Status status=new Status();
+			status.setStatus(StatusType.SUCCESS);
+			status.setMessage("Quiz Successfully deleted!!");
+			return status; 
+			
+		}
+		catch(DuplicateKeyException e) {
+			Status status=new Status();
+			status.setStatus(StatusType.FAILURE);
+			status.setMessage(e.getMessage());
+			return status;
+		}
+		catch(CourseException e) {
+			Status status=new Status();
+			status.setStatus(StatusType.FAILURE);
+			status.setMessage(e.getMessage());
+			return status;
+		}
+		
+	}
+	
+	
 	@GetMapping("/getquiz")
 	public List<QuizResponse> getQuiz(@RequestParam("courseName") String courseName) {
 		try {

@@ -41,7 +41,7 @@ public class ProblemService {
 		
 		 return processList;
 		}
-		catch(DuplicateKeyException e) {
+		catch(CourseException e) {
 			throw new CourseException(e.getMessage());
 		}
 								
@@ -70,7 +70,7 @@ public class ProblemService {
 		
 		 return resObj;
 		}
-		catch(DuplicateKeyException e) {
+		catch(CourseException e) {
 			throw new CourseException(e.getMessage());
 		}
 								
@@ -93,7 +93,7 @@ public class ProblemService {
 			throw new CourseException(e.getMessage());
 		}
 		catch(CourseException e){
-			throw new CourseException("Duplicate Course Name");
+			throw new CourseException("Duplicate Problem Name");
 		}						
 		
 	}
@@ -114,21 +114,14 @@ public class ProblemService {
 				p.setDescription(problem.getDescription());
 				p.setDifficulty(problem.getDifficulty());
 			}
-			
-			//list.add(e)
 		}
 		
-		
-		//mproblem.add(problem);		
 		course.setProblems(list);
 		
 		courseRepository.save(course);
 		}
-		catch(DuplicateKeyException e) {
-			throw new CourseException(e.getMessage());
-		}
 		catch(CourseException e){
-			throw new CourseException("Duplicate Course Name");
+			throw new CourseException("Problem update fails");
 		}						
 		
 	}
@@ -155,7 +148,7 @@ public class ProblemService {
 		courseRepository.save(course);
 		}
 		catch(DuplicateKeyException e) {
-			throw new CourseException(e.getMessage());
+			throw new DuplicateKeyException(e.getMessage());
 		}
 		catch(CourseException e){
 			throw new CourseException("Duplicate Course Name");

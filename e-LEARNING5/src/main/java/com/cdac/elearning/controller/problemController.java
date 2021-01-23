@@ -59,7 +59,7 @@ public class problemController {
 			problemService.addProblem(problem);
 			Status status=new Status();
 			status.setStatus(StatusType.SUCCESS);
-			status.setMessage("Course Successfully Entered!!");
+			status.setMessage("Problem Successfully Entered!!");
 			return status; 
 			
 		}
